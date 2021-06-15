@@ -4,16 +4,42 @@
 
 #ifndef SORTEDLIST_NODE_H
 #define SORTEDLIST_NODE_H
-#include "SortedList.h"
+#include "sortedList.h"
 
 class Node
 {
     int value;
     Node *next;
-    friend class SortedList;
 
+public:
+    explicit Node(const int& value, Node *next = nullptr);
+    ~Node() = default;
+    const int& getValue() const;
+
+    void setNext(Node *next);
+
+    Node *getNext() const;
 };
 
+const int& Node::getValue() const
+{
+    return value;
+}
+
+void Node::setNext(Node *next)
+{
+    this->next = next;
+}
+
+Node* Node::getNext() const
+{
+    return next;
+}
+
+Node::Node(const int &value, Node *next) : value(value), next(next)
+{
+}
+///
 
 
 #endif //SORTEDLIST_NODE_H
