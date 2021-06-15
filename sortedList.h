@@ -8,13 +8,15 @@
 using std::exception;
 #include <stdexcept>
 
+
+template <class T>
 class SortedList
 {
-    Node* head;
+    Node<T>* head;
     int size;
-    //friend class Node*;
-    void putStart(Node* new_node);
-    void putMiddle(Node* previous_node, Node* new_node);
+    //friend class Node<T>*;
+    void putStart(Node<T>* new_node);
+    void putMiddle(Node<T>* previous_node, Node<T>* new_node);
     void clean();
 public:
     class const_iterator;
@@ -22,7 +24,7 @@ public:
     ~SortedList();
     SortedList(const SortedList& sorted_list);
     SortedList& operator=(const SortedList& sorted_list);
-    void insert(const int& data);
+    void insert(const T& data);
     void remove(const const_iterator& iterator);
     template<class Function>
     SortedList filter(Function predict) const;
@@ -33,11 +35,11 @@ public:
     const_iterator end() const;
 };
 
-
-class SortedList::const_iterator
+template <class T>
+class SortedList<T>::const_iterator
 {
-    Node* node;
-    explicit const_iterator(Node* node);
+    Node<T>* node;
+    explicit const_iterator(Node<T>* node);
 
 public:
     const_iterator(const const_iterator& iterator) = default;
@@ -46,30 +48,31 @@ public:
     friend class SortedList;
     const_iterator& operator++();
     const_iterator operator++(int);
-    const int& operator*() const;
+    const T& operator*() const;
     bool operator==(const const_iterator& other) const;
     bool operator!=(const const_iterator& other) const;
 };
 
 //copy c'tor
-SortedList::SortedList(const SortedList& sorted_list):
+template <class T>
+SortedList<T>::SortedList(const SortedList<T>& sorted_list):
         head(nullptr), size(0)
 {
     *this = sorted_list;
 }
-
-SortedList::~SortedList()
+template <class T>
+SortedList<T>::~SortedList()
 {
     clean();
 }
-
-void SortedList::clean()
+template <class T>
+void SortedList<T>::clean()
 {
     if (head == nullptr)
     {
         return;
     }
-    Node* temp=head;
+    Node<T>* temp=head;
     while (head->getNext()!= nullptr)
     {
         head=head->getNext();
@@ -81,29 +84,30 @@ void SortedList::clean()
     size = 0;
 }
 
-SortedList& SortedList::operator=(const SortedList& sorted_list)
+template <class T>
+SortedList<T>& SortedList<T>::operator=(const SortedList<T>& sorted_list)
 {
     if(this==&sorted_list)
     {
         return *this;
     }
     clean();
-    for (int value : sorted_list) {
+    for (T value : sorted_list) {
         insert(value);
     }
     return *this;
 }
 
-
-void SortedList::insert(const int& data)
+template <class T>
+void SortedList<T>::insert(const T& data)
 {
-    Node* new_node = new Node(data);
+    Node<T>* new_node = new Node<T>(data);
     if(head == nullptr || !(head->getValue() < new_node->getValue()))
     {
         putStart(new_node);
         return;
     }
-    Node* previous_node = head;
+    Node<T>* previous_node = head;
     while (previous_node->getNext() != nullptr && previous_node->getNext()->getValue() < new_node->getValue())
     {
         previous_node = previous_node->getNext();
@@ -111,21 +115,24 @@ void SortedList::insert(const int& data)
     putMiddle(previous_node, new_node);
 }
 
-void SortedList::putStart(Node* new_node)
+template <class T>
+void SortedList<T>::putStart(Node<T>* new_node)
 {
     new_node->setNext(head);
     head = new_node;
     size++;
 }
 
-void SortedList::putMiddle(Node* previous_node, Node* new_node)
+template <class T>
+void SortedList<T>::putMiddle(Node<T>* previous_node, Node<T>* new_node)
 {
     new_node->setNext(previous_node->getNext());
     previous_node->setNext(new_node);
     size++;
 }
 
-void SortedList::remove(const const_iterator& iterator)
+template <class T>
+void SortedList<T>::remove(const SortedList::const_iterator& iterator)
 {
     if(head==iterator.node)
     {
@@ -133,7 +140,7 @@ void SortedList::remove(const const_iterator& iterator)
         delete iterator.node;
         return;
     }
-    Node* ptr=head;
+    Node<T>* ptr=head;
     while(ptr->getNext()!=nullptr && ptr->getNext()!=iterator.node)
     {
         ptr=ptr->getNext();
@@ -141,17 +148,18 @@ void SortedList::remove(const const_iterator& iterator)
     ptr->setNext(ptr->getNext()->getNext());
     delete iterator.node;
 }
-
-int SortedList::length() const
+template <class T>
+int SortedList<T>::length() const
 {
     return size;
 }
 
+template <class T>
 template <class Function>
-SortedList SortedList::filter(Function predict) const
+SortedList<T> SortedList<T>::filter(Function predict) const
 {
-    SortedList sorted_list = SortedList();
-    for (int value : *this)
+    SortedList<T> sorted_list = SortedList<T>();
+    for (T value : *this)
     {
         if (predict(value))
         {
@@ -161,25 +169,26 @@ SortedList SortedList::filter(Function predict) const
     return sorted_list;
 }
 
+template <class T>
 template <class Function>
-SortedList SortedList::apply (Function function) const
+SortedList<T> SortedList<T>::apply (Function function) const
 {
-    SortedList sorted_list=SortedList();
-    for (int value : *this)
+    SortedList<T> sorted_list=SortedList<T>();
+    for (T value : *this)
     {
-        insert (function(value));
+        sorted_list.insert(function(value));
     }
     return sorted_list;
 }
 
 
-
-SortedList::const_iterator SortedList::begin() const
+template <class T>
+typename SortedList<T>::const_iterator SortedList<T>::begin() const
 {
     return const_iterator(head);
 }
-
-SortedList::const_iterator SortedList::end() const
+template <class T>
+typename SortedList<T>::const_iterator SortedList<T>::end() const
 {
     return const_iterator(nullptr);
 }
@@ -190,7 +199,8 @@ SortedList::const_iterator SortedList::end() const
 
 
 /////////////////////////////////////////////////////////////////////////////
-SortedList::const_iterator& SortedList::const_iterator::operator++()
+template <class T>
+typename SortedList<T>::const_iterator& SortedList<T>::const_iterator::operator++()
 {
     if(node == nullptr)
     {
@@ -199,16 +209,16 @@ SortedList::const_iterator& SortedList::const_iterator::operator++()
     node = node->getNext();
     return *this;
 }
-
-SortedList::const_iterator SortedList::const_iterator::operator++(int)
+template <class T>
+typename SortedList<T>::const_iterator SortedList<T>::const_iterator::operator++(int)
 {
     const_iterator temp(*this);
     ++*this;
     return temp;
 }
 
-
-bool SortedList::const_iterator::operator==(const const_iterator& other) const
+template <class T>
+bool SortedList<T>::const_iterator::operator==(const const_iterator& other) const
 {
     if(node == other.node)
     {
@@ -216,17 +226,17 @@ bool SortedList::const_iterator::operator==(const const_iterator& other) const
     }
     return false;
 }
-
-const int& SortedList::const_iterator::operator*() const
+template <class T>
+const T& SortedList<T>::const_iterator::operator*() const
 {
     return node->getValue();
 }
-
-SortedList::const_iterator::const_iterator(Node *node) : node(node)
+template <class T>
+SortedList<T>::const_iterator::const_iterator(Node<T> *node) : node(node)
 {
 }
-
-bool SortedList::const_iterator::operator!=(const SortedList::const_iterator &other) const
+template <class T>
+bool SortedList<T>::const_iterator::operator!=(const SortedList<T>::const_iterator &other) const
 {
     return !(*this == other);
 }

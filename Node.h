@@ -6,37 +6,40 @@
 #define SORTEDLIST_NODE_H
 #include "sortedList.h"
 
+template <class T>
 class Node
 {
-    int value;
-    Node *next;
-
+    T value;
+    Node<T>* next;
 public:
-    explicit Node(const int& value, Node *next = nullptr);
+    explicit Node(const T& value, Node<T> *next_node = nullptr);
     ~Node() = default;
-    const int& getValue() const;
+    const T& getValue() const;
 
-    void setNext(Node *next);
+    void setNext(Node<T> *next_node);
 
-    Node *getNext() const;
+    Node<T> *getNext() const;
 };
 
-const int& Node::getValue() const
+template<class T>
+const T& Node<T>::getValue() const
 {
     return value;
 }
 
-void Node::setNext(Node *next)
+template<class T>
+void Node<T>::setNext(Node<T>* next_node)
 {
-    this->next = next;
+    next = next_node;
 }
 
-Node* Node::getNext() const
+template<class T>
+Node<T>* Node<T>::getNext() const
 {
     return next;
 }
-
-Node::Node(const int &value, Node *next) : value(value), next(next)
+template<class T>
+Node<T>::Node(const T &value, Node<T>* next_node) : value(value), next(next_node)
 {
 }
 ///
