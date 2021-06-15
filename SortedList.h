@@ -14,9 +14,10 @@ class SortedList
     Node* head;
     int size;
     //friend class Node*;
-    class const_iterator;
+    //class const_iterator;
 
 public:
+    friend class const_iterator;
     SortedList()=default; //c'tor
     ~SortedList();
     SortedList(const SortedList sorted_list);
@@ -26,7 +27,7 @@ public:
     void putMiddle(Node ptr, Node new_node);
     void putEnd(Node ptr, Node new_node);
     int length ();
-    void remove();
+    friend void remove();
 };
 
 //copy c'tor
@@ -109,7 +110,8 @@ void SortedList::remove(SortedList::const_iterator iterator)
     if(ptr==iterator)
     {
         head=head->next;
-        ptr->iterator= nullptr;
+        ptr->iterator->next= nullptr;
+        iterator->
     }
     while(!(ptr->next==iterator)&&(!(ptr->next== nullptr)))
     {
@@ -152,6 +154,7 @@ public:
     void operator++();
     bool operator==(const const_iterator& new_iterator);
     friend class SortedList;
+    Node* getIterator(const const_iterator& new_iterator);
 };
 
 SortedList::const_iterator::const_iterator(const const_iterator& new_iterator):
@@ -199,6 +202,9 @@ const int& SortedList::const_iterator::operator*()
     return &a;
 }
 
-
+Node* SortedList::const_iterator::getIterator(const const_iterator& new_iterator)
+{
+    return new_iterator.iterator;
+}
 
 #endif //SORTEDLIST_SORTEDLIST_H
